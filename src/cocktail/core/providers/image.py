@@ -54,8 +54,6 @@ class ImageProvider(QtCore.QObject):
         super().__init__(parent)
         self.network_manager = NetworkManager()
         self._cache = cache or FixedLengthMapping(max_entries=100)
-        self.error_image = resources.icon("error.png").pixmap(512, 512).toImage()
-        self.movie = QtGui.QMovie()
 
     def hasImage(self, url):
         return url in self._cache
@@ -79,14 +77,11 @@ class ImageProvider(QtCore.QObject):
 
     def onImageDownloaded(self, reply: QtNetwork.QNetworkReply, callback):
         if reply.error() != QtNetwork.QNetworkReply.NoError:
-            self._cache[reply.url().toString()] = self.error_image
-            callback(self.error_image)
+            self._cache[reply.url().toString()] = None
+            callback(None)
             return
 
         image = QtGui.QImage.fromData(reply.readAll())
-
-        if image.isNull():
-            image = self.error_image
 
         self._cache[reply.url().toString()] = image
 

@@ -17,6 +17,8 @@ class ItemRenderWidget(QtWidgets.QWidget):
         super().__init__(parent)
         self.setContentsMargins(0, 0, 0, 0)
         self._image = QtGui.QImage()
+        self._error_image = cocktail.resources.icon("error.png").pixmap(512, 512).toImage()
+
         self.selected = False
 
         self.model_name_label = InfoLabel("name")
@@ -64,7 +66,20 @@ class ItemRenderWidget(QtWidgets.QWidget):
 
         painter.setClipPath(clip_path)
 
-        if self._image and not self._image.isNull():
+        if self._image is None or self._image.isNull():
+            desired_width = self.width() * 0.5
+            desired_height = desired_width / self.getImageAspectRatio(self._error_image)
+            scaled_image = self._error_image.scaled(
+                desired_width,
+                desired_height,
+                QtCore.Qt.AspectRatioMode.KeepAspectRatio,
+                QtCore.Qt.TransformationMode.SmoothTransformation,
+            )
+            image_rect = scaled_image.rect()
+            image_rect.moveCenter(draw_rect.center())
+            painter.drawImage(image_rect, scaled_image)           
+
+        elif self._image:
             height = self.height()
             width = height * self.getImageAspectRatio(self._image)
 
@@ -110,7 +125,6 @@ class ModelGalleryItemDelegate(QtWidgets.QStyledItemDelegate):
         super().__init__(parent)
         self._item_size = QtCore.QSize(450, 650)
         self._widget = ItemRenderWidget()
-        self._error_image = cocktail.resources.icon("error.png").pixmap(512, 512)
 
     def setItemSize(self, size):
         self._item_size = size
