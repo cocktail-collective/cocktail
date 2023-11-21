@@ -39,16 +39,18 @@ jobs:
         run: |
           python build.py --dist
 
-      - name: Release ${{matrix.os}}
+      - name: Release ${{runner.os}}
         if: runner.os == 'Linux'
         uses: softprops/action-gh-release@v1
         with:
+          tag_name: ${{ github.ref }}
           files: |
             dist/cocktail
 
-      - name: Release ${{matrix.os}}
+      - name: Release ${{runner.os}}
         if: runner.os == 'Windows'
         uses: softprops/action-gh-release@v1
         with:
+            tag_name: ${{ github.ref }}
             files: |
               dist/cocktail.exe
