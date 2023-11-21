@@ -42,14 +42,14 @@ jobs:
 
       - name: Upload Artifact for Windows
         uses: actions/upload-artifact@v2
-        if: runner.os == 'windows-latest'
+        if: runner.os == 'Windows'
         with:
           name: cocktail-${{ github.ref_name }}-${{ matrix.os }}.exe
           path: 'dist/cocktail.exe'
 
-      - name: Upload Artifact for Ubuntu
+      - name: Upload Artifact for Linux
         uses: actions/upload-artifact@v2
-        if: runner.os == 'ubuntu-latest'
+        if: runner.os == 'Linux'
         with:
           name: cocktail-${{ github.ref_name }}-${{ matrix.os }}
           path: 'dist/cocktail'
