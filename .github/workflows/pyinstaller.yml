@@ -3,7 +3,7 @@ name: PyInstaller
 on:
   push:
     branches:
-      - none
+      - master
     tags:
       - 'release-v[0-9].*'
 
@@ -30,28 +30,9 @@ jobs:
         with:
           python-version: "3.10"
 
-      - name: Install Python libs
+      - name: Build
         run: |
           python -m pip install --upgrade pip
           pip install -e.[dist]
-
-      - name: ${{matrix.os}} Build
-        run: |
-          python build.py --dist
-
-      - name: Release Linux
-        if: runner.os == 'Linux'
-
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ github.ref }}
-          files: |
-            dist/cocktail
-
-      - name: Release Windows
-        if: runner.os == 'Windows'
-        uses: softprops/action-gh-release@v1
-        with:
-            tag_name: ${{ github.ref }}
-            files: |
-              dist/cocktail.exe
+          python ci/build.py
+          python ci/release.py ${{ github.ref_name }}
