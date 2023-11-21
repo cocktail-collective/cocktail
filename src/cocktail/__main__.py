@@ -26,7 +26,6 @@ def main():
     app.setApplicationName("Cocktail")
     apply_stylesheet()
 
-
     if args.debug:
         level = logging.DEBUG
     else:

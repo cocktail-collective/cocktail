@@ -41,4 +41,3 @@ def blob(name: str) -> bytes:
     get the binary data from a resource file
     """
     return importlib.resources.read_binary("cocktail.resources", name)
-

@@ -1,7 +1,7 @@
 QLabel[class="model-name"] {
     font: Noto Sans;
     font-size: 24px;
-    
+
 }
 
 ModelDownloadItemWidget {
@@ -34,7 +34,7 @@ QTabBar::tab {
 QTabBar::tab:selected {
     background: palette(window);
     border-style: solid;
-    
+
     border-bottom-color: palette(highlight);
 
 }
@@ -48,14 +48,14 @@ QPushButton[class="gallery-nav-button"] {
 
 QPushButton[class="gallery-nav-button"]:checked {
     background-color: palette(highlight);
-   
+
 }
 
 QPushButton[class="gallery-nav-button"]:hover {
     border: 2px;
     border-style: solid;
     border-color: palette(highlight);
-   
+
 }
 
 ImageGalleryView{

@@ -17,7 +17,9 @@ class ItemRenderWidget(QtWidgets.QWidget):
         super().__init__(parent)
         self.setContentsMargins(0, 0, 0, 0)
         self._image = QtGui.QImage()
-        self._error_image = cocktail.resources.icon("error.png").pixmap(512, 512).toImage()
+        self._error_image = (
+            cocktail.resources.icon("error.png").pixmap(512, 512).toImage()
+        )
 
         self.selected = False
 
@@ -77,7 +79,7 @@ class ItemRenderWidget(QtWidgets.QWidget):
             )
             image_rect = scaled_image.rect()
             image_rect.moveCenter(draw_rect.center())
-            painter.drawImage(image_rect, scaled_image)           
+            painter.drawImage(image_rect, scaled_image)
 
         elif self._image:
             height = self.height()

@@ -47,8 +47,6 @@ class StringEditor(QtWidgets.QWidget):
 
     def value(self):
         return self.value
-    
-    
 
 
 class SettingsView(QtWidgets.QWidget):
@@ -96,10 +94,8 @@ class SettingsView(QtWidgets.QWidget):
 
         if tooltip:
             widget.setToolTip(tooltip)
-        
-        widget.valueChanged.connect(lambda text: self.settingChanged.emit(key, text))
-        
 
+        widget.valueChanged.connect(lambda text: self.settingChanged.emit(key, text))
 
         self._editors[key] = widget
         group_layout.addRow(label, widget)

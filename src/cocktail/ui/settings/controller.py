@@ -15,7 +15,7 @@ PRESETS = {
         "paths/TextualInversion": "embeddings",
         "paths/VAE": "models/VAE",
     },
-    "ComfyUI":{
+    "ComfyUI": {
         "paths/Checkpoint": "models/checkpoints",
         "paths/Controlnet": "models/controlnet",
         "paths/Hypernetwork": "models/hypernetworks",
@@ -24,8 +24,9 @@ PRESETS = {
         "paths/TextualInversion": "models/embeddings",
         "paths/VAE": "models/vae",
         "paths/Upscaler": "models/upscale_models",
+    },
 }
-}
+
 
 def walk_namespaces(namespace: str) -> list[str]:
     """
