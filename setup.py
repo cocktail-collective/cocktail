@@ -8,15 +8,12 @@ setup(
     packages=find_namespace_packages(where="src"),
     install_requires=[
         "PySide6",
-        "requests",
-        "cachecontrol[filecache]",
-        "filelock",
         "qtawesome",
-        "backoff",
     ],
     entry_points={
         "console_scripts": [
             "cocktail = cocktail.__main__:main",
         ],
     },
+    extras_require={"dev": ["pre-commit", "black"]},
 )
