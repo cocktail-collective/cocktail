@@ -1,4 +1,6 @@
+import setuptools
 from setuptools import setup, find_namespace_packages
+
 
 setup(
     name="cocktail",
@@ -16,5 +18,8 @@ setup(
             "cocktail = cocktail.__main__:main",
         ],
     },
-    extras_require={"dev": ["pre-commit", "black"]},
+    extras_require={
+        "dev": ["pre-commit", "black", "pyinstaller"],
+        "dist": ["pyinstaller"],
+    },
 )

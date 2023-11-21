@@ -21,7 +21,7 @@ def main():
     args = parser.parse_args()
 
     app = QtWidgets.QApplication()
-    icon = resources.icon("logo.png")
+    icon = resources.icon("cocktail.png")
     app.setWindowIcon(icon)
     app.setApplicationName("Cocktail")
     apply_stylesheet()

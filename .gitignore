@@ -161,3 +161,4 @@ cython_debug/
 .idea/
 
 scratch
+src/**/resources_rc.py
