@@ -3,11 +3,9 @@ name: PyInstaller
 on:
   push:
     branches:
-      - master
-      - 3-build-binary-distributions
-
+      - none
     tags:
-      - 'v[0-9].*'
+      - 'release-v[0-9].*'
 
 jobs:
   pyinstaller:
