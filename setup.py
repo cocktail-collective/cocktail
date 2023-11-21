@@ -2,7 +2,7 @@ from setuptools import setup, find_namespace_packages
 
 setup(
     name="cocktail",
-    version="0.0.0",
+    version="0.0.1",
     description="Cocktail",
     package_dir={"": "src"},
     packages=find_namespace_packages(where="src"),
