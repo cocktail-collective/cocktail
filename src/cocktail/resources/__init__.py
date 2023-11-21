@@ -1,11 +1,10 @@
 """
 This api is a wrapper around the importlib.resources module for loading resources
 """
-import os
-import random
-import importlib.resources
-import importlib.metadata
-from PySide6 import QtGui
+from . import resources_rc  # noqa: F401
+from PySide6 import QtGui, QtCore
+
+# list all resources here
 
 
 def icon(name: str) -> QtGui.QIcon:
@@ -19,7 +18,7 @@ def image(name: str) -> QtGui.QImage:
     """
     get an image resource
     """
-    return QtGui.QImage.fromData(blob(name))
+    return QtGui.QImage(":/cocktail/images/" + name)
 
 
 def pixmap(name: str) -> QtGui.QPixmap:
@@ -33,11 +32,9 @@ def text(name: str) -> str:
     """
     get a text resource
     """
-    return importlib.resources.read_text("cocktail.resources", name)
+    resource = QtCore.QResource(":/cocktail/" + name)
 
+    if not resource.isValid():
+        raise ValueError(f"Resource {name} not found")
 
-def blob(name: str) -> bytes:
-    """
-    get the binary data from a resource file
-    """
-    return importlib.resources.read_binary("cocktail.resources", name)
+    return resource.uncompressedData().data().decode("utf-8")

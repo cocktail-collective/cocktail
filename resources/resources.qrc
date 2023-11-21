@@ -1,0 +1,8 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+    <qresource prefix="cocktail">
+    <file>stylesheet.qss</file>
+    <file>images/cocktail.png</file>
+    <file>images/error.png</file>
+    </qresource>
+</RCC>
