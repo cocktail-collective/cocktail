@@ -1,0 +1,56 @@
+CREATE TABLE IF NOT EXISTS model (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    type TEXT NOT NULL,
+    category TEXT NOT NULL,
+    nsfw BOOLEAN NOT NULL,    
+    creator_name TEXT NOT NULL,
+    creator_image TEXT NOT NULL,
+    image TEXT NOT NULL,
+    description TEXT NOT NULL,
+    updated_at INTEGER NOT NULL
+
+);
+
+CREATE TABLE IF NOT EXISTS model_version (
+    id INTEGER PRIMARY KEY,
+    model_id INTEGER NOT NULL,
+    name TEXT NOT NULL,
+    description TEXT NOT NULL,
+    FOREIGN KEY (model_id) REFERENCES model (id)
+);
+
+CREATE TABLE IF NOT EXISTS model_file (
+    id INTEGER PRIMARY KEY,
+    model_id INTEGER NOT NULL,
+    model_version_id INTEGER NOT NULL,
+    is_primary BOOLEAN NOT NULL,
+    name TEXT NOT NULL,
+    url TEXT NOT NULL,
+    size INTEGER NOT NULL,
+    safe BOOLEAN NOT NULL,    
+    format TEXT NOT NULL,
+    datatype TEXT NOT NULL,
+    pruned BOOLEAN NOT NULL,
+
+    FOREIGN KEY (model_id) REFERENCES model (id),
+    FOREIGN KEY (model_version_id) REFERENCES model_version (id)
+);
+
+CREATE TABLE IF NOT EXISTS model_image (
+    id INTEGER PRIMARY KEY,
+    model_id INTEGER NOT NULL,
+    model_version_id INTEGER NOT NULL,
+    url TEXT NOT NULL,
+    generation_data TEXT NOT NULL,
+    FOREIGN KEY (model_id) REFERENCES model (id),
+    FOREIGN KEY (model_version_id) REFERENCES model_version (id)
+);
+
+
+CREATE TABLE IF NOT EXISTS metadata (
+    id INTEGER PRIMARY KEY,
+    key TEXT NOT NULL,
+    value TEXT NOT NULL,
+    UNIQUE (key)
+);

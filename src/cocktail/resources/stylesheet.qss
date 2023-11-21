@@ -1,0 +1,159 @@
+QLabel[class="model-name"] {
+    font: Noto Sans;
+    font-size: 24px;
+    
+}
+
+ModelDownloadItemWidget {
+    background: palette(dark);
+    border-style: transparent;
+    border-width: 2px;
+    border-radius: 10px;
+}
+
+QTabWidget::pane {
+    background: palette(window);
+    border-style: solid;
+    border-color: palette(dark);
+    border-width: 2px;
+
+    border-radius: 10px;
+    border-top-left-radius: 0px;
+    padding: 10px;
+
+}
+
+QTabBar::tab {
+    background: palette(window);
+    border-style: transparent;
+    border-width: 2px;
+    border: 2px;
+    border-color: palette(dark);
+    padding: 5px;
+}
+QTabBar::tab:selected {
+    background: palette(window);
+    border-style: solid;
+    
+    border-bottom-color: palette(highlight);
+
+}
+
+QPushButton[class="gallery-nav-button"] {
+    background-color: palette(light);
+    border-style: solid;
+    border-width: 2px;
+    border-radius: 10px;
+}
+
+QPushButton[class="gallery-nav-button"]:checked {
+    background-color: palette(highlight);
+   
+}
+
+QPushButton[class="gallery-nav-button"]:hover {
+    border: 2px;
+    border-style: solid;
+    border-color: palette(highlight);
+   
+}
+
+ImageGalleryView{
+    background: palette(dark);
+    qproperty-borderRadius: 10;
+}
+
+FileInfoView {
+    background: palette(dark);
+    border-style: transparent;
+    border-width: 2px;
+    border-radius: 10px;
+    qproperty-alternatingRowColors: true;
+    qproperty-showGrid: true;
+}
+
+FileInfoView::item {
+    padding: 10px;
+
+}
+
+QScrollBar {
+    border: none;
+    background: palette(dark);
+}
+
+QScrollBar::handle {
+    background: palette(light);
+    min-height: 20px;
+    border-radius: 7px;
+}
+
+
+
+QScrollBar::handle:hover {
+    background: palette(highlight);
+}
+
+QSplitter::handle {
+    margin: 8px;
+}
+
+BrowserItemView {
+    background: palette(shadow);
+    /* border-style: transparent; */
+    border-width: 2px;
+    border-radius: 10px;
+}
+
+QComboBox {
+    background: palette(dark);
+    border-style: transparent;
+    border-width: 2px;
+    border-radius: 10px;
+    padding: 5px;
+    min-width: 6em;
+}
+
+QComboBox QAbstractItemView {
+    background-color: palette(dark);
+    border-style: transparent;
+    border-width: 2px;
+    border-radius: 10px;
+    selection-background-color: lightgray;
+}
+
+
+
+QComboBox::down-arrow {
+    background: palette(light);
+}
+
+QTextEdit {
+    background: palette(dark);
+    border-style: transparent;
+    border-width: 2px;
+    border-radius: 10px;
+    padding: 5px;
+}
+
+ModelInfoHeader {
+    background: red;
+    border-style: solid;
+    border-width: 2px;
+    border-radius: 10px;
+    padding: 5px;
+}
+
+QLabel[class='model-info-label']{
+    background: palette(dark);
+    border-style: transparent;
+    border-width: 2px;
+    border-radius: 10px;
+    padding: 5px;
+
+}
+
+QToolTip {
+    background: palette(window);
+    color: palette(text);
+}
