@@ -15,7 +15,6 @@ import platformdirs
 import importlib.resources
 from PySide6 import QtSql
 from cocktail.core.database import data_classes
-from cocktail.core.database import util
 
 
 logger = logging.getLogger(__name__)

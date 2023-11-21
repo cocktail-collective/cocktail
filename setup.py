@@ -9,6 +9,7 @@ setup(
     install_requires=[
         "PySide6",
         "qtawesome",
+        "platformdirs",
     ],
     entry_points={
         "console_scripts": [

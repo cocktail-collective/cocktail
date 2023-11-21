@@ -1,10 +1,9 @@
 __all__ = ["ImageProvider", "ImageProviderProxyModel"]
-from PySide6 import QtCore, QtGui, QtNetwork, QtMultimedia
+from PySide6 import QtCore, QtGui, QtNetwork
 from functools import partial
 
 from cocktail.core.http import NetworkManager
 from cocktail.core.cache import FixedLengthMapping
-from cocktail import resources
 
 
 class ImageProviderProxyModel(QtCore.QIdentityProxyModel):
