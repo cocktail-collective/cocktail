@@ -37,7 +37,7 @@ jobs:
 
       - name: ${{matrix.os}} Build
         run: |
-          python build.py
+          python build.py --dist
 
 
       - name: Upload Artifact for Windows
