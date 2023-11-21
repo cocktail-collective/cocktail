@@ -10,7 +10,9 @@ on:
       - 'v[0-9].*'
 
 jobs:
-  briefcase:
+  pyinstaller:
+    permissions:
+        contents: write
     name: Bundle on ${{ matrix.os }} / ${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}
     strategy:
@@ -41,6 +43,7 @@ jobs:
 
       - name: Release ${{runner.os}}
         if: runner.os == 'Linux'
+
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ github.ref }}
