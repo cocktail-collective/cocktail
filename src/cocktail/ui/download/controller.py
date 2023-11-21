@@ -121,6 +121,10 @@ class ModelDownloadController(QtCore.QObject):
             else:
                 os.remove(final_path)
 
+        final_path = final_path.format(
+            category=model.category,
+        )
+
         dirname, basename = os.path.split(final_path)
         filename, _ = os.path.splitext(basename)
 

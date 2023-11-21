@@ -16,6 +16,8 @@ class DirectoryPicker(QtWidgets.QWidget):
         self._layout.addWidget(self._browse_button)
         self._browse_button.clicked.connect(self.browse)
 
+        self._path_label.textChanged.connect(self.valueChanged)
+
     def browse(self):
         path = QtWidgets.QFileDialog.getExistingDirectory(self, "Select Directory")
         if path:
@@ -24,7 +26,6 @@ class DirectoryPicker(QtWidgets.QWidget):
     def setValue(self, path):
         self.value = path
         self._path_label.setText(path)
-        self.valueChanged.emit(path)
 
     def value(self):
         return self.value

@@ -1,18 +1,19 @@
 __all__ = ["SettingsController"]
-
+import logging
 from typing import Any
 from PySide6 import QtCore, QtWidgets, QtGui, QtSql
 from cocktail.ui.settings.view import SettingsView
 
+logger = logging.getLogger(__name__)
 
 PRESETS = {
     "Automatic-1111": {
-        "paths/Checkpoint": "models/Stable-diffusion",
+        "paths/Checkpoint": "models/Stable-diffusion/{category}",
         "paths/Controlnet": "extensions/sd-webui-controlnet/models",
-        "paths/Hypernetwork": "models/hypernetworks",
-        "paths/LORA": "models/Lora",
-        "paths/LoCon": "models/Lora",
-        "paths/TextualInversion": "embeddings",
+        "paths/Hypernetwork": "models/hypernetworks/{category}",
+        "paths/LORA": "models/Lora/{category}",
+        "paths/LoCon": "models/Lora/{category}",
+        "paths/TextualInversion": "embeddings/{category}",
         "paths/VAE": "models/VAE",
     },
     "ComfyUI": {
@@ -71,7 +72,7 @@ class SettingsController(QtCore.QObject):
             "General",
             "Models Root",
             "paths/root",
-            self.settings.value("models-root"),
+            self.settings.value("paths/root"),
             hint="directory",
             tooltip="The root directory of your stable diffusion tool",
         )
@@ -98,8 +99,10 @@ class SettingsController(QtCore.QObject):
             self.presets_model.appendRow(item)
 
     def onSettingChanged(self, key, value):
+        logger.debug(f"Setting changed: {key}={value}")
         self.settings.setValue(key, value)
-        self.settings.sync()
+
+        # self.settings.sync()
 
     def onAcceptClicked(self, preset_name):
         preset = PRESETS[preset_name]
