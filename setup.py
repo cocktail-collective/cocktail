@@ -14,4 +14,9 @@ setup(
         "qtawesome",
         "backoff",
     ],
+    entry_points={
+        "console_scripts": [
+            "cocktail = cocktail.__main__:main",
+        ],
+    },
 )
