@@ -12,11 +12,22 @@ def apply_stylesheet():
     app.setStyleSheet(style_sheet)
 
 
+def list_resources(root=None):
+    root = root or QtCore.QResource(":/cocktail")
+    for child in root.children():
+        child = QtCore.QResource(f":/cocktail/{child}")
+        if child.isDir():
+            list_resources(child)
+        else:
+            print(child.absoluteFilePath())
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--debug", action="store_true")
     parser.add_argument("--no-update", action="store_true")
     parser.add_argument("--reload-stylesheet", action="store_true")
+    parser.add_argument("--list-resources", action="store_true")
 
     args = parser.parse_args()
 
@@ -44,6 +55,9 @@ def main():
         ss_timer.setInterval(1000)
         ss_timer.timeout.connect(apply_stylesheet)
         ss_timer.start()
+
+    if args.list_resources:
+        list_resources()
 
     app.exec()
 
