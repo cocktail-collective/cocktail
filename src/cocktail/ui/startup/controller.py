@@ -65,7 +65,6 @@ class UnZipStep(QtCore.QObject):
                 with zip_file.open(info) as file, open(
                     os.path.join(destination, info.filename), "wb"
                 ) as output_file:
-
                     while True:
                         chunk = file.read(self.CHUNK_SIZE)
                         if not chunk:

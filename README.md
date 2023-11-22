@@ -2,8 +2,21 @@
 
 ![alt text](img/browser.jpg)
 
-Cocktail is a standalone browser for Stable Diffusion models, designed with the goal of making managing your models easy.
+Cocktail is a standalone browser for Stable Diffusion models, designed with the goal of making managing your models easy and fast.
 <br> <br>
+
+## Installing
+### Binary Releases
+
+Download the latest [release](https://github.com/cocktail-collective/cocktail/releases/latest)
+
+
+or install in a virual environment.
+
+``` bash
+pip install git+https://github.com/cocktail-collective/cocktail.git
+cocktail
+```
 
 ## Features
 
