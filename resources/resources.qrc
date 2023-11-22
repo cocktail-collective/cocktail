@@ -4,5 +4,6 @@
     <file>stylesheet.qss</file>
     <file>images/cocktail.png</file>
     <file>images/error.png</file>
+    <file>images/splash.png</file>
     </qresource>
 </RCC>

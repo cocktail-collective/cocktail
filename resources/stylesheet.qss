@@ -157,3 +157,16 @@ QToolTip {
     background: palette(window);
     color: palette(text);
 }
+
+QProgressBar[class="splash-screen-progress-bar"] {
+                border: 1px solid transparent;
+                border-radius: 10px;
+                text-align: center;
+            }
+
+QProgressBar[class="splash-screen-progress-bar"]::chunk {
+    background: palette(highlight);
+    border: 1px solid transparent;
+    border-radius: 10px;
+    text-align: center;
+}

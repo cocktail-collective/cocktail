@@ -188,12 +188,17 @@ class ModelImage(typing.NamedTuple):
 
     @classmethod
     def from_json(cls, model_id, model_version_id, data: dict):
+        metadata = {
+            "prompt": data.get("prompt", ""),
+            "negativePrompt": data.get("negativePrompt", ""),
+        }
+
         return cls(
             id=data["id"],
             model_id=model_id,
             model_version_id=model_version_id,
             url=data["url"],
-            generation_data=json.dumps(data["meta"]),
+            generation_data=json.dumps(metadata),
         )
 
     @classmethod
