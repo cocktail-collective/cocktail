@@ -1,7 +1,10 @@
 """
 This api is a wrapper around the importlib.resources module for loading resources
 """
-from . import resources_rc  # noqa: F401
+from . import resources_rc
+
+resources_rc.qInitResources()
+
 from PySide6 import QtGui, QtCore
 
 # list all resources here
@@ -32,6 +35,7 @@ def text(name: str) -> str:
     """
     get a text resource
     """
+
     resource = QtCore.QResource(":/cocktail/" + name)
 
     if not resource.isValid():
