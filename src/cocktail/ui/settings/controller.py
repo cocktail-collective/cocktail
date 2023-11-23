@@ -1,4 +1,5 @@
-__all__ = ["SettingsController"]
+__all__ = ["SettingsController", "detect_tool"]
+import os
 import logging
 from typing import Any
 from PySide6 import QtCore, QtWidgets, QtGui, QtSql
@@ -27,6 +28,34 @@ PRESETS = {
         "paths/Upscaler": "models/upscale_models",
     },
 }
+
+
+def detect_tool(directory):
+    """
+    Detects the type of diffusion tool in the given directory.
+    """
+    is_automatic = all(
+        [
+            os.path.isdir(os.path.join(directory, "models", "Stable-diffusion")),
+            os.path.isdir(os.path.join(directory, "extensions-builtin")),
+            os.path.isfile(os.path.join(directory, "webui.bat")),
+        ]
+    )
+
+    if is_automatic:
+        return "Automatic-1111"
+
+    comfy_ui = all(
+        [
+            os.path.isdir(os.path.join(directory, "comfy")),
+            os.path.isdir(os.path.join(directory, "models", "checkpoints")),
+        ]
+    )
+
+    if comfy_ui:
+        return "ComfyUI"
+
+    return None
 
 
 def walk_namespaces(namespace: str) -> list[str]:
