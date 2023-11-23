@@ -14,20 +14,7 @@ e.g. the location where you put Automatic1111 or ComfyUI...
 """
 
 
-class PageBase(QtWidgets.QWizardPage):
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self._fields = []
-
-    def registerField(self, name, widget, property="text"):
-        super().registerField(name, widget, property)
-        self._fields.append(name)
-
-    def fields(self):
-        return {k: self.field(k) for k in self._fields}
-
-
-class SelectToolDirectoryStep(PageBase):
+class SelectToolDirectoryStep(QtWidgets.QWizardPage):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setTitle("Where is your diffusion tool installed?")
@@ -62,7 +49,7 @@ class SelectToolDirectoryStep(PageBase):
         return super().validatePage() and os.path.isdir(self.directory_edit.text())
 
 
-class PathsTool(PageBase):
+class PathsTool(QtWidgets.QWizardPage):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setTitle("Select Diffusion Tool")
