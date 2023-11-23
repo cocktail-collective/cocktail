@@ -129,13 +129,13 @@ def get_update_period(db):
         return data_classes.Period.AllTime
 
 
-def get_db_path():
+def get_database_path():
     dirname = platformdirs.user_cache_dir("cocktail", "cocktail")
     return os.path.join(dirname, "cocktail.sqlite3")
 
 
 def get_connection(filepath=None):
-    filepath = filepath or get_db_path()
+    filepath = filepath or get_database_path()
     os.makedirs(os.path.dirname(filepath), exist_ok=True)
 
     logger.info(f"Connecting to database at {filepath}")

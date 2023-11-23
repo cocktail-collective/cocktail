@@ -64,6 +64,7 @@ def main():
 
     startup_controller = StartupController()
     startup_controller.complete.connect(start)
+    startup_controller.canceled.connect(app.quit)
     startup_controller.start()
 
     app.exec()

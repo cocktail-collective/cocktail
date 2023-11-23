@@ -4,7 +4,8 @@ import json
 import zipfile
 import platformdirs
 from PySide6 import QtCore, QtNetwork
-from cocktail.ui.startup.view import CocktailSplashScreen
+from cocktail.ui.startup.view import CocktailSplashScreen, SetupWizard
+from cocktail.core.database.api import get_database_path
 
 
 def get_db_url(data):
@@ -87,13 +88,15 @@ class StartupController(QtCore.QObject):
     """
 
     complete = QtCore.Signal()
+    canceled = QtCore.Signal()
 
     api_url = "https://api.github.com/repos/cocktail-collective/cocktail/releases"
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.view = CocktailSplashScreen()
-        self.cache_dir = platformdirs.user_cache_dir("cocktail", "cocktail")
+        self.splash = CocktailSplashScreen()
+        self.wizard = SetupWizard()
+        self.database_path = get_database_path()
         self.network_manager = QtNetwork.QNetworkAccessManager()
 
         self.get_releases_step = DownloadStep(self.network_manager)
@@ -104,26 +107,27 @@ class StartupController(QtCore.QObject):
         self.unzip_thread = QtCore.QThread()
         self.unzip_db_step.moveToThread(self.unzip_thread)
 
-        self.get_releases_step.progress.connect(self.view.setProgress)
-        self.download_db_step.progress.connect(self.view.setProgress)
-        self.unzip_db_step.progress.connect(self.view.setProgress)
+        self.get_releases_step.progress.connect(self.splash.setProgress)
+        self.download_db_step.progress.connect(self.splash.setProgress)
+        self.unzip_db_step.progress.connect(self.splash.setProgress)
 
         self.get_releases_step.complete.connect(self.onReleasesReady)
         self.download_db_step.complete.connect(self.onZipDownloaded)
-        self.unzip_db_step.complete.connect(self.onCompleted)
+        self.unzip_db_step.complete.connect(self.onZipExtracted)
+        self.wizard.rejected.connect(self.onCanceled)
+        self.wizard.accepted.connect(self.onCompleted)
 
     def start(self):
         """
         begin the startup process.
         """
-        db_path = os.path.join(self.cache_dir, "cocktail.sqlite3")
-        if os.path.exists(db_path):
+        if os.path.exists(self.database_path):
             self.onCompleted()
             return
 
-        self.view.show()
-        self.view.setText("Getting database...")
-        self.view.setProgress(0, 0)
+        self.splash.show()
+        self.splash.setText("Getting database...")
+        self.splash.setProgress(0, 0)
         self.get_releases_step.download(self.api_url)
 
     def onReleasesReady(self, reply: QtNetwork.QNetworkReply):
@@ -138,25 +142,40 @@ class StartupController(QtCore.QObject):
         if url is None:
             return
 
-        self.view.setText("Downloading database...")
-        self.view.setProgress(0, 0)
+        self.splash.setText("Downloading database...")
+        self.splash.setProgress(0, 0)
         self.download_db_step.download(url)
 
     def onZipDownloaded(self, reply: QtNetwork.QNetworkReply):
         """
         after downloading the database, we need to extract it.
         """
-        self.view.setText("Extracting database...")
-        self.view.setProgress(0, 0)
-        self.unzip_db_step.extract(reply, self.cache_dir)
+        self.splash.setText("Extracting database...")
+        self.splash.setProgress(0, 0)
+        self.unzip_db_step.extract(reply, os.path.dirname(self.database_path))
+
+    def onZipExtracted(self):
+        """
+        after extracting the database, we need to show the setup wizard.
+        """
+        self.splash.close()
+        self.wizard.show()
 
     def onCompleted(self):
         """
         cleanup and signal completion.
         """
         self.unzip_thread.quit()
-        self.view.close()
+        self.splash.close()
         self.complete.emit()
+
+    def onCanceled(self):
+        """
+        cleanup and signal completion.
+        """
+        self.unzip_thread.quit()
+        self.splash.close()
+        self.canceled.emit()
 
 
 if __name__ == "__main__":
@@ -169,8 +188,14 @@ if __name__ == "__main__":
         app.closeAllWindows()
         app.quit()
 
+    def onCanceled():
+        print("canceled")
+        app.closeAllWindows()
+        app.quit()
+
     controller = StartupController()
     controller.complete.connect(onCompleted)
+    controller.canceled.connect(onCanceled)
 
     controller.start()
 
