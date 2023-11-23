@@ -15,7 +15,7 @@ or install in a virual environment.
 
 ``` bash
 git clone https://github.com/cocktail-collective/cocktail.git
-python ci/build.py # ensure rc files are built.
+cd cocktail
 pip install .
 cocktail
 ```
