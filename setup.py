@@ -2,11 +2,10 @@ import shutil
 import subprocess
 from setuptools import setup, find_namespace_packages
 
-import setuptools.command.sdist
-import setuptools.command.develop
+import setuptools.command.install
 
 
-class SDist(setuptools.command.sdist.sdist):
+class Install(setuptools.command.install.install):
     """
     Generate resources_rc.py before building the source distribution.
     """
@@ -21,7 +20,7 @@ class SDist(setuptools.command.sdist.sdist):
                 "resources/resources.qrc",
             ]
         )
-        setuptools.command.sdist.sdist.run(self)
+        setuptools.command.install.install.run(self)
 
 
 setup(
@@ -45,6 +44,6 @@ setup(
         "dist": ["pyinstaller"],
     },
     cmdclass={
-        "sdist": SDist,
+        "install": Install,
     },
 )
