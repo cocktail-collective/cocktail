@@ -25,7 +25,7 @@ class Build(setuptools.command.build.build):
 
 setup(
     name="cocktail",
-    version="0.3.0",
+    version="0.3.1",
     description="Cocktail",
     package_dir={"": "src"},
     packages=find_namespace_packages(where="src"),
