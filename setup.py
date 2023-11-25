@@ -33,6 +33,7 @@ setup(
         "PySide6",
         "qtawesome",
         "platformdirs",
+        "blurhash",
     ],
     entry_points={
         "console_scripts": [

@@ -1,4 +1,6 @@
 __all__ = ["ImageProvider", "ImageProviderProxyModel"]
+import blurhash
+from PIL import ImageQt
 from PySide6 import QtCore, QtGui, QtNetwork
 from functools import partial
 
@@ -18,6 +20,7 @@ class ImageProviderProxyModel(QtCore.QIdentityProxyModel):
     def __init__(self, image_provider=None, parent=None):
         super().__init__(parent)
         self.image_provider: ImageProvider = image_provider or ImageProvider()
+        self.blur_cache = FixedLengthMapping(max_entries=100)
 
     def data(self, index: QtCore.QModelIndex, role: int = ...):
         if role in self.ImageRoles:
@@ -33,11 +36,16 @@ class ImageProviderProxyModel(QtCore.QIdentityProxyModel):
 
         callback = partial(self.onImageDownloaded, index=index, url=url)
 
-        self.image_provider.queueImageDownload(url, callback)
+        self.image_provider.queueImageDownload(
+            url, callback, blur_hash=self.getBlurHash(index, role)
+        )
 
-        return None
+        return self.image_provider.getImage(url)
 
     def getUrl(self, index: QtCore.QModelIndex, role):
+        raise NotImplementedError
+
+    def getBlurHash(self, index, role):
         raise NotImplementedError
 
     def onImageDownloaded(self, image, url, index):
@@ -60,19 +68,21 @@ class ImageProvider(QtCore.QObject):
     def getImage(self, url):
         return self._cache[url]
 
-    def queueImageDownload(self, url, callback):
+    def queueImageDownload(self, url, callback, blur_hash=None):
         if url in self._cache:
             callback(self._cache[url])
             return
 
-        self._cache[url] = None  # prevent duplicate requests
+        if not blur_hash:
+            self._cache[url] = None  # prevent duplicate requests
+        elif blurhash.is_valid_blurhash(blur_hash):
+            self._cache[url] = ImageQt.ImageQt(blurhash.decode(blur_hash, 8, 12))
 
         reply = self.network_manager.get(url)
         callback = partial(self.onImageDownloaded, reply=reply, callback=callback)
-
         reply.finished.connect(callback)
 
-        return None
+        return self._cache[url]
 
     def onImageDownloaded(self, reply: QtNetwork.QNetworkReply, callback):
         if reply.error() != QtNetwork.QNetworkReply.NoError:
@@ -81,7 +91,6 @@ class ImageProvider(QtCore.QObject):
             return
 
         image = QtGui.QImage.fromData(reply.readAll())
-
-        self._cache[reply.url().toString()] = image
-
-        callback(image)
+        if not image.isNull():
+            self._cache[reply.url().toString()] = image
+            callback(image)

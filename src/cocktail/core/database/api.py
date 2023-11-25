@@ -1,11 +1,12 @@
 __all__ = [
     "get_connection",
     "insert_page",
-    "get_update_period",
+    "get_db_update_period",
     "get_last_updated",
     "set_last_updated",
+    "calculate_period",
 ]
-
+import json
 import os
 import time
 import logging
@@ -26,7 +27,12 @@ def insert_or_replace(db, table_name, rows: typing.Iterable[typing.NamedTuple]):
         return
 
     start = time.time()
-    column_names = [name for name in rows[0]._fields]
+    try:
+        column_names = [name for name in rows[0]._fields]
+    except AttributeError:
+        print(rows[0])
+        raise
+
     column_names = ", ".join(column_names)
     placeholder = ", ".join(["?"] * len(rows[0]._fields))
 
@@ -44,6 +50,9 @@ def insert_or_replace(db, table_name, rows: typing.Iterable[typing.NamedTuple]):
         query.prepare(statement)
 
         for index, value in enumerate(row):
+            if isinstance(value, (list, dict)):
+                value = json.dumps(value)
+
             query.bindValue(index, value)
 
         if not query.exec():
@@ -110,11 +119,14 @@ def create_tables(db):
     set_last_updated(db, epoch)
 
 
-def get_update_period(db):
-    now = datetime.datetime.now()
+def get_db_update_period(db):
 
     last_updated = get_last_updated(db)
+    return calculate_period(last_updated)
 
+
+def calculate_period(last_updated):
+    now = datetime.datetime.now()
     days = (now - last_updated).days
 
     if days <= 2:

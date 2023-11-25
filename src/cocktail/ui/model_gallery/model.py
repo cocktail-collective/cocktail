@@ -1,6 +1,7 @@
 from PySide6 import QtCore
 
 from cocktail.core.providers import ImageProviderProxyModel
+from cocktail.core.database import data_classes
 
 
 class ModelGalleryProxyModel(ImageProviderProxyModel):
@@ -41,3 +42,8 @@ class ModelGalleryProxyModel(ImageProviderProxyModel):
         name = self.ImageRoles[role]
         record = self.sourceModel().record(index.row())
         return record.value(name)
+
+    def getBlurHash(self, index, role=QtCore.Qt.ItemDataRole.DecorationRole):
+        record = self.sourceModel().record(index.row())
+        value = record.value("image_blur_hash")
+        return value

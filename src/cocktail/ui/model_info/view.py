@@ -78,6 +78,28 @@ class ModelInfoHeader(QtWidgets.QWidget):
         layout.addWidget(self.creator_info, 0, QtCore.Qt.AlignmentFlag.AlignRight)
 
 
+class ImageInfoView(QtWidgets.QGroupBox):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.seed_label = QtWidgets.QLabel()
+        self.cfg_scale_label = QtWidgets.QLabel()
+        self.prompt_text = QtWidgets.QTextEdit()
+        self.negative_prompt_text = QtWidgets.QTextEdit()
+
+        data_layout = QtWidgets.QFormLayout(self)
+        data_layout.addRow("seed", self.seed_label)
+        data_layout.addRow("cfg", self.cfg_scale_label)
+        data_layout.addRow("prompt", self.prompt_text)
+        data_layout.addRow("negative prompt", self.negative_prompt_text)
+
+    def setImageData(self, image: data_classes.ModelImage):
+        generation_data = image.generation_data
+        self.seed_label.setText(str(generation_data["seed"]))
+        self.cfg_scale_label.setText(str(generation_data["cfgScale"]))
+        self.prompt_text.setText(generation_data["prompt"])
+        self.negative_prompt_text.setText(generation_data["negativePrompt"])
+
+
 class VersionInfoView(QtWidgets.QWidget):
     downloadClicked = QtCore.Signal()
     versionIndexChanged = QtCore.Signal(QtCore.QModelIndex)
@@ -92,6 +114,9 @@ class VersionInfoView(QtWidgets.QWidget):
         )
 
         self.image_gallery = ImageGalleryView()
+        self.image_gallery.setMinimumHeight(500)
+
+        self.image_info = ImageInfoView()
         self.file_combo = QtWidgets.QComboBox()
         self.file_info = FileInfo()
         self.download_button = QtWidgets.QPushButton("Download")
@@ -101,6 +126,7 @@ class VersionInfoView(QtWidgets.QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addRow("Version", self.version_combo)
         layout.addWidget(self.image_gallery)
+        layout.addWidget(self.image_info)
         layout.addRow("File", self.file_combo)
         layout.addWidget(self.file_info)
         layout.addWidget(self.download_button)
@@ -109,6 +135,7 @@ class VersionInfoView(QtWidgets.QWidget):
         self.file_combo.currentIndexChanged.connect(self.onFileIndexChanged)
         self.image_gallery.indexChanged.connect(self.imageIndexChanged)
         self.download_button.clicked.connect(self.downloadClicked)
+        self.image_gallery.indexChanged.connect(self.imageIndexChanged)
 
     def onVersionIndexChanged(self, index: int):
         index = self.version_combo.model().index(index, 0)
@@ -121,8 +148,8 @@ class VersionInfoView(QtWidgets.QWidget):
     def setVersionModel(self, model):
         self.version_combo.setModel(model)
 
-    def setImageModel(self, model):
-        self.image_gallery.setModel(model)
+    def setImageData(self, image: data_classes.ModelImage):
+        self.image_info.setImageData(image)
 
     def setFileModel(self, model):
         self.file_combo.setModel(model)
@@ -153,6 +180,9 @@ class ModelInfoView(QtWidgets.QWidget):
     def setModelData(self, model: data_classes.Model):
         self.description.setText(model.description)
         self.header_view.model_name_label.setText(model.name)
+
+    def setImageData(self, image: data_classes.ModelImage):
+        self.image_info.setImageData(image)
 
 
 if __name__ == "__main__":

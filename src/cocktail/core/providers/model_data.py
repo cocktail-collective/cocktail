@@ -73,7 +73,7 @@ class ModelDataProvider(QtCore.QObject):
         data = json.loads(bytearray(data))
         items = data["items"]
 
-        self.queue.put(data_classes.deserialise_page(items))
+        self.queue.put(data_classes.deserialise_items(items))
         self.pageReady.emit()
 
         metadata = data["metadata"]
