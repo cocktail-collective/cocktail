@@ -28,11 +28,7 @@ def insert_or_replace(db, table_name, rows: typing.Iterable[typing.NamedTuple]):
         return
 
     start = time.time()
-    try:
-        column_names = [name for name in rows[0]._fields]
-    except AttributeError:
-        print(rows[0])
-        raise
+    column_names = [name for name in rows[0]._fields]
 
     column_names = ", ".join(column_names)
     placeholder = ", ".join(["?"] * len(rows[0]._fields))
