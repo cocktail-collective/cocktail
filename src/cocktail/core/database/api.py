@@ -126,7 +126,6 @@ def create_tables(db):
 
 
 def get_db_update_period(db):
-
     last_updated = get_last_updated(db)
     return calculate_period(last_updated)
 
