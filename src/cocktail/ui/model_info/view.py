@@ -6,6 +6,22 @@ from cocktail import util
 import qtawesome
 
 
+class CollapsibleGroup(QtWidgets.QGroupBox):
+    def __init__(self, title="", collapsed=False, parent=None):
+        super().__init__(title, parent)
+        self.setCheckable(True)
+        self.setChecked(not collapsed)
+        self.toggled.connect(self.__on_checked)
+
+    def __on_checked(self, checked):
+        for i in range(self.layout().count()):
+            widget = self.layout().itemAt(i).widget()
+            widget.setVisible(checked)
+
+    def update(self):
+        self.__on_checked(self.isChecked())
+
+
 class FileInfo(QtWidgets.QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -78,10 +94,11 @@ class ModelInfoHeader(QtWidgets.QWidget):
         layout.addWidget(self.creator_info, 0, QtCore.Qt.AlignmentFlag.AlignRight)
 
 
-class ImageInfoView(QtWidgets.QGroupBox):
+class ImageInfoView(CollapsibleGroup):
     def __init__(self, parent=None):
-        super().__init__(parent)
+        super().__init__("Generation Data", parent=parent, collapsed=True)
         self.seed_label = QtWidgets.QLabel()
+        self.sampler_label = QtWidgets.QLabel()
         self.cfg_scale_label = QtWidgets.QLabel()
         self.prompt_text = QtWidgets.QTextEdit()
         self.negative_prompt_text = QtWidgets.QTextEdit()
@@ -89,8 +106,11 @@ class ImageInfoView(QtWidgets.QGroupBox):
         data_layout = QtWidgets.QFormLayout(self)
         data_layout.addRow("seed", self.seed_label)
         data_layout.addRow("cfg", self.cfg_scale_label)
+        data_layout.addRow("sampler", self.sampler_label)
         data_layout.addRow("prompt", self.prompt_text)
         data_layout.addRow("negative prompt", self.negative_prompt_text)
+
+        self.update()
 
     def setImageData(self, image: data_classes.ModelImage):
         generation_data = image.generation_data
@@ -98,6 +118,7 @@ class ImageInfoView(QtWidgets.QGroupBox):
         self.cfg_scale_label.setText(str(generation_data["cfgScale"]))
         self.prompt_text.setText(generation_data["prompt"])
         self.negative_prompt_text.setText(generation_data["negativePrompt"])
+        self.sampler_label.setText(generation_data["sampler"])
 
 
 class VersionInfoView(QtWidgets.QWidget):

@@ -1,3 +1,6 @@
+pragma journal_mode = WAL;
+pragma synchronous = normal;
+
 CREATE TABLE IF NOT EXISTS model (
     id INTEGER PRIMARY KEY,
     name TEXT NOT NULL,
@@ -45,6 +48,8 @@ CREATE TABLE IF NOT EXISTS model_image (
     url TEXT NOT NULL,
     generation_data TEXT NOT NULL,
     blur_hash TEXT NOT NULL,
+    width INTEGER NOT NULL,
+    height INTEGER NOT NULL,
     FOREIGN KEY (model_id) REFERENCES model (id),
     FOREIGN KEY (model_version_id) REFERENCES model_version (id)
 );
@@ -56,3 +61,5 @@ CREATE TABLE IF NOT EXISTS metadata (
     value TEXT NOT NULL,
     UNIQUE (key)
 );
+
+PRAGMA user_version = 1;

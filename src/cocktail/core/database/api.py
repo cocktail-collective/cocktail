@@ -17,6 +17,7 @@ import importlib.resources
 from PySide6 import QtSql
 from cocktail.core.database import data_classes
 
+CURRENT_SCHEMA_VERSION = 1
 
 logger = logging.getLogger(__name__)
 
@@ -115,6 +116,11 @@ def create_tables(db):
             logger.error(query.lastError().text())
             return False
 
+    query = QtSql.QSqlQuery(db)
+    query.prepare("PRAGMA user_version = ?")
+    query.bindValue(0, CURRENT_SCHEMA_VERSION)
+    query.exec()
+
     epoch = datetime.datetime.fromtimestamp(0)
     set_last_updated(db, epoch)
 
@@ -160,6 +166,16 @@ def get_connection(filepath=None):
         create_tables(db)
 
     return db
+
+
+def get_schema_version(db):
+    query = QtSql.QSqlQuery(db)
+    query.prepare("PRAGMA user_version")
+
+    if not query.exec():
+        raise RuntimeError(f"Failed to execute statement: {query.lastError().text()}")
+
+    return int(query.value(0))
 
 
 if __name__ == "__main__":

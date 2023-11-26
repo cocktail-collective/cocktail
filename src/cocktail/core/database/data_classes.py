@@ -193,6 +193,8 @@ class ModelImage(typing.NamedTuple):
     url: str
     generation_data: str
     blur_hash: str
+    width: int
+    height: int
 
     @classmethod
     def from_json(cls, model_id, model_version_id, data: dict):
@@ -204,6 +206,7 @@ class ModelImage(typing.NamedTuple):
             "seed": metadata.get("seed", ""),
             "steps": metadata.get("steps", 20),
             "cfgScale": metadata.get("cfgScale", 7.0),
+            "sampler": metadata.get("sampler", ""),
         }
 
         return cls(
@@ -213,6 +216,8 @@ class ModelImage(typing.NamedTuple):
             url=data["url"],
             generation_data=generation_data,
             blur_hash=data.get("hash", "") or "",
+            width=data["width"],
+            height=data["height"],
         )
 
     @classmethod
@@ -224,6 +229,8 @@ class ModelImage(typing.NamedTuple):
             url=record.value("url"),
             generation_data=json.loads(record.value("generation_data")),
             blur_hash=record.value("blur_hash"),
+            width=record.value("width"),
+            height=record.value("height"),
         )
 
 
