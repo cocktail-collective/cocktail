@@ -60,6 +60,7 @@ class UnZipStep(QtCore.QObject):
         self.CHUNK_SIZE = 1024 * 1024
 
     def extract(self, reply: QtNetwork.QNetworkReply, destination: str):
+        os.makedirs(destination, exist_ok=True)
         buffer = io.BytesIO(reply.readAll().data())
 
         with zipfile.ZipFile(buffer) as zip_file:
