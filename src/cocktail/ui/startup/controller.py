@@ -128,7 +128,7 @@ class StartupController(QtCore.QObject):
         if os.path.exists(self.database_path):
             logger.info("checking database schema...")
             connection = db_api.get_connection(self.database_path)
-            if db_api.get_schema_version(connection) >= db_api.CURRENT_SCHEMA_VERSION:
+            if db_api.get_schema_version(connection) == db_api.CURRENT_SCHEMA_VERSION:
                 logger.info("database schema is up to date.")
                 self.onCompleted()
                 return

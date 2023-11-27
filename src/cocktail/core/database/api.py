@@ -176,4 +176,7 @@ def get_schema_version(db):
     if not query.exec():
         raise RuntimeError(f"Failed to execute statement: {query.lastError().text()}")
 
-    return int(query.value(0) or 0)
+    if not query.next():
+        raise RuntimeError("Failed to get schema version")
+    version = query.value(0)
+    return version
