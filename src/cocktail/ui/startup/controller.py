@@ -173,12 +173,19 @@ class StartupController(QtCore.QObject):
         after extracting the database, we need to show the setup wizard.
         """
         self.splash.close()
-        self.wizard.show()
+        logger.info("checking paths setup...")
+
+        settings = QtCore.QSettings("cocktail", "cocktail")
+        if not settings.value("paths/root"):
+            self.wizard.show()
+        else:
+            self.onCompleted()
 
     def onCompleted(self):
         """
         cleanup and signal completion.
         """
+        logger.info("startup complete.")
         self.unzip_thread.quit()
         self.splash.close()
         self.complete.emit()
@@ -187,6 +194,7 @@ class StartupController(QtCore.QObject):
         """
         cleanup and signal completion.
         """
+        logger.info("startup canceled.")
         self.unzip_thread.quit()
         self.splash.close()
         self.canceled.emit()
