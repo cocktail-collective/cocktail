@@ -25,7 +25,7 @@ class Build(setuptools.command.build.build):
 
 setup(
     name="cocktail",
-    version="0.3.1",
+    version="0.4.0",
     description="Cocktail",
     package_dir={"": "src"},
     packages=find_namespace_packages(where="src"),
@@ -33,6 +33,7 @@ setup(
         "PySide6",
         "qtawesome",
         "platformdirs",
+        "blurhash-python",
     ],
     entry_points={
         "console_scripts": [

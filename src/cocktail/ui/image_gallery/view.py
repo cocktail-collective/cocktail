@@ -1,5 +1,6 @@
 __all__ = ["ImageGalleryView", "ImageWidget"]
 import typing
+import PySide6.QtCore
 import qtawesome
 from PySide6 import QtCore, QtGui, QtWidgets
 

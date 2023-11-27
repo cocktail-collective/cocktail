@@ -29,7 +29,7 @@ class DatabaseController(QtCore.QObject):
 
     def updateModelData(self, period: data_classes.Period = None):
         if period is None:
-            period = db_api.get_update_period(self.connection)
+            period = db_api.get_db_update_period(self.connection)
 
         self.logger.info(f"Updating model data for period: {period.value}")
 

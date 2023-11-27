@@ -1,3 +1,6 @@
+pragma journal_mode = WAL;
+pragma synchronous = normal;
+
 CREATE TABLE IF NOT EXISTS model (
     id INTEGER PRIMARY KEY,
     name TEXT NOT NULL,
@@ -7,6 +10,7 @@ CREATE TABLE IF NOT EXISTS model (
     creator_name TEXT NOT NULL,
     creator_image TEXT NOT NULL,
     image TEXT NOT NULL,
+    image_blur_hash TEXT NOT NULL,
     description TEXT NOT NULL,
     updated_at INTEGER NOT NULL
 
@@ -17,6 +21,7 @@ CREATE TABLE IF NOT EXISTS model_version (
     model_id INTEGER NOT NULL,
     name TEXT NOT NULL,
     description TEXT NOT NULL,
+    trained_words TEXT NOT NULL,
     FOREIGN KEY (model_id) REFERENCES model (id)
 );
 
@@ -32,7 +37,6 @@ CREATE TABLE IF NOT EXISTS model_file (
     format TEXT NOT NULL,
     datatype TEXT NOT NULL,
     pruned BOOLEAN NOT NULL,
-
     FOREIGN KEY (model_id) REFERENCES model (id),
     FOREIGN KEY (model_version_id) REFERENCES model_version (id)
 );
@@ -43,6 +47,9 @@ CREATE TABLE IF NOT EXISTS model_image (
     model_version_id INTEGER NOT NULL,
     url TEXT NOT NULL,
     generation_data TEXT NOT NULL,
+    blur_hash TEXT NOT NULL,
+    width INTEGER NOT NULL,
+    height INTEGER NOT NULL,
     FOREIGN KEY (model_id) REFERENCES model (id),
     FOREIGN KEY (model_version_id) REFERENCES model_version (id)
 );

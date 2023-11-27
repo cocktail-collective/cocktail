@@ -53,12 +53,12 @@ def items_from_model_json(data: dict):
 
     if len(versions) == 0:
         logger.warning(f"Model {model.name} has no versions, discarding.")
-        return [], [], [], []
+        return None, None, None, None
     else:
         return model, versions, files, images
 
 
-def deserialise_page(page: typing.List[dict]):
+def deserialise_items(page: typing.List[dict]):
     models = []
     versions = []
     files = []
@@ -67,12 +67,16 @@ def deserialise_page(page: typing.List[dict]):
         model, model_versions, model_files, model_images = items_from_model_json(
             model_data
         )
+
+        if model is None:
+            continue
+
         models.append(model)
         versions.extend(model_versions)
         files.extend(model_files)
         images.extend(model_images)
 
-    return Page(models, versions, files, images)
+    return Page(models, versions, images, files)
 
 
 class Model(typing.NamedTuple):
@@ -84,6 +88,7 @@ class Model(typing.NamedTuple):
     creator_name: str
     creator_image: str
     image: str
+    image_blur_hash: str
     description: str
     updated_at: int
 
@@ -106,6 +111,7 @@ class Model(typing.NamedTuple):
             creator_name=data["creator"]["username"],
             creator_image=data["creator"]["image"] or "",
             image=image_data.get("url", ""),
+            image_blur_hash=image_data.get("hash", "") or "",
             description=data["description"] or "",
             updated_at=timestamp,
         )
@@ -121,6 +127,7 @@ class Model(typing.NamedTuple):
             creator_name=record.value("creator_name"),
             creator_image=record.value("creator_image"),
             image=record.value("image"),
+            image_blur_hash=record.value("image_blur_hash"),
             description=record.value("description"),
             updated_at=record.value("updated_at"),
         )
@@ -185,12 +192,21 @@ class ModelImage(typing.NamedTuple):
     model_version_id: int
     url: str
     generation_data: str
+    blur_hash: str
+    width: int
+    height: int
 
     @classmethod
     def from_json(cls, model_id, model_version_id, data: dict):
-        metadata = {
-            "prompt": data.get("prompt", ""),
-            "negativePrompt": data.get("negativePrompt", ""),
+        metadata = data["meta"] or {}
+
+        generation_data = {
+            "prompt": metadata.get("prompt", ""),
+            "negativePrompt": metadata.get("negativePrompt", ""),
+            "seed": metadata.get("seed", ""),
+            "steps": metadata.get("steps", 20),
+            "cfgScale": metadata.get("cfgScale", 7.0),
+            "sampler": metadata.get("sampler", ""),
         }
 
         return cls(
@@ -198,7 +214,10 @@ class ModelImage(typing.NamedTuple):
             model_id=model_id,
             model_version_id=model_version_id,
             url=data["url"],
-            generation_data=json.dumps(metadata),
+            generation_data=generation_data,
+            blur_hash=data.get("hash", "") or "",
+            width=data["width"],
+            height=data["height"],
         )
 
     @classmethod
@@ -209,6 +228,9 @@ class ModelImage(typing.NamedTuple):
             model_version_id=record.value("model_version_id"),
             url=record.value("url"),
             generation_data=json.loads(record.value("generation_data")),
+            blur_hash=record.value("blur_hash"),
+            width=record.value("width"),
+            height=record.value("height"),
         )
 
 
@@ -217,6 +239,7 @@ class ModelVersion(typing.NamedTuple):
     model_id: int
     name: str
     description: str
+    trained_words: typing.List[str]
 
     @classmethod
     def from_json(cls, data: dict):
@@ -225,6 +248,7 @@ class ModelVersion(typing.NamedTuple):
             model_id=data["modelId"],
             name=data["name"],
             description=data["description"] or "",
+            trained_words=data["trainedWords"],
         )
 
     @classmethod
@@ -234,14 +258,15 @@ class ModelVersion(typing.NamedTuple):
             model_id=record.value("model_id"),
             name=record.value("name"),
             description=record.value("description"),
+            trained_words=json.loads(record.value("trained_words")),
         )
 
 
 class Page(typing.NamedTuple):
     models: typing.List[Model]
     versions: typing.List[ModelVersion]
-    files: typing.List[ModelFile]
     images: typing.List[ModelImage]
+    files: typing.List[ModelFile]
 
 
 def parse_timestamp(date_str: str):

@@ -129,13 +129,25 @@ class ModelDownloadController(QtCore.QObject):
         filename, _ = os.path.splitext(basename)
 
         image_path = os.path.join(dirname, f"{filename}.jpg")
-        image_url = self.get_image_url(model_version)
+        image = self.get_image(model_version)
+        image_url = image.url if image else None
+
         if image_url:
             self._download(image_url, image_path)
 
         json_path = os.path.join(dirname, f"{filename}.json")
+
+        metadata = {
+            "name": model.name,
+            "activation text": ",".join(model_version.trained_words),
+            "description": model_version.description + "\n\n" + model.description,
+            "model": model._asdict(),
+            "version": model_version._asdict(),
+            "image": image._asdict() if image else None,
+        }
+
         with open(json_path, "w") as f:
-            json.dump(model._asdict(), f, indent=4)
+            json.dump(metadata, f, indent=4)
 
         reply = self._download(model_file.url, final_path)
 
@@ -144,11 +156,11 @@ class ModelDownloadController(QtCore.QObject):
             lambda p=final_path: self.onOpenDirectoryClick(os.path.dirname(p))
         )
 
-    def get_image_url(self, model_version: data_classes.ModelVersion):
+    def get_image(self, model_version: data_classes.ModelVersion):
         query = QtSql.QSqlQuery(self.db_connection)
         query.prepare(
             """
-            SELECT url FROM model_image
+            SELECT * FROM model_image
             WHERE model_version_id = :model_version_id
             ORDER BY id DESC
             """
@@ -161,7 +173,7 @@ class ModelDownloadController(QtCore.QObject):
             )
 
         query.next()
-        return query.value(0)
+        return data_classes.ModelImage.from_record(query.record())
 
     def _download(self, url, path):
         temp_path = path + ".part"

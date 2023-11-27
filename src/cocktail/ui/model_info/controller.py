@@ -109,6 +109,13 @@ class VersionInfoController(QtCore.QObject):
         self.view.file_info.setFileSize(model_file.size)
         self.view.file_info.setDatatype(model_file.datatype)
 
+    def onImageIndexChanged(self, index: QtCore.QModelIndex):
+        record = self.image_model.record(index.row())
+        image = data_classes.ModelImage.from_record(record)
+
+        self.view.image_info.setResolution(image.resolution)
+        self.view.image_info.setFormat(image.format)
+
     def onDownloadClicked(self):
         self.requestDownload.emit(self._model, self._model_version, self._model_file)
 
@@ -142,6 +149,9 @@ class ModelInfoController(QtCore.QObject):
             self.connection,
             self.image_provider,
             view=self.view.version_info.image_gallery,
+        )
+        self.image_gallery_controller.imageChanged.connect(
+            self.view.version_info.setImageData
         )
 
         self.version_info_controller.versionIdChanged.connect(

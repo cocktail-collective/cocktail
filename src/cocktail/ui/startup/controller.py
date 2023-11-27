@@ -2,10 +2,13 @@ import os
 import io
 import json
 import zipfile
-import platformdirs
+import logging
 from PySide6 import QtCore, QtNetwork
 from cocktail.ui.startup.view import CocktailSplashScreen, SetupWizard
-from cocktail.core.database.api import get_database_path
+from cocktail.core.database import api as db_api
+
+
+logger = logging.getLogger(__name__)
 
 
 def get_db_url(data):
@@ -97,7 +100,7 @@ class StartupController(QtCore.QObject):
         super().__init__(parent)
         self.splash = CocktailSplashScreen()
         self.wizard = SetupWizard()
-        self.database_path = get_database_path()
+        self.database_path = db_api.get_database_path()
         self.network_manager = QtNetwork.QNetworkAccessManager()
 
         self.get_releases_step = DownloadStep(self.network_manager)
@@ -122,9 +125,20 @@ class StartupController(QtCore.QObject):
         """
         begin the startup process.
         """
+        logger.info("checking for database...")
         if os.path.exists(self.database_path):
-            self.onCompleted()
-            return
+            logger.info("checking database schema...")
+            connection = db_api.get_connection(self.database_path)
+            if db_api.get_schema_version(connection) == db_api.CURRENT_SCHEMA_VERSION:
+                logger.info("database schema is up to date.")
+                self.onCompleted()
+                return
+            else:
+                logger.info("database schema is out of date, downloading database.")
+                connection.close()
+                os.remove(self.database_path)
+        else:
+            logger.info("database not found, downloading database.")
 
         self.splash.show()
         self.splash.setText("Getting database...")
@@ -160,12 +174,19 @@ class StartupController(QtCore.QObject):
         after extracting the database, we need to show the setup wizard.
         """
         self.splash.close()
-        self.wizard.show()
+        logger.info("checking paths setup...")
+
+        settings = QtCore.QSettings("cocktail", "cocktail")
+        if not settings.value("paths/root"):
+            self.wizard.show()
+        else:
+            self.onCompleted()
 
     def onCompleted(self):
         """
         cleanup and signal completion.
         """
+        logger.info("startup complete.")
         self.unzip_thread.quit()
         self.splash.close()
         self.complete.emit()
@@ -174,6 +195,7 @@ class StartupController(QtCore.QObject):
         """
         cleanup and signal completion.
         """
+        logger.info("startup canceled.")
         self.unzip_thread.quit()
         self.splash.close()
         self.canceled.emit()

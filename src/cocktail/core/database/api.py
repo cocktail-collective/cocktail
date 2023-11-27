@@ -1,11 +1,12 @@
 __all__ = [
     "get_connection",
     "insert_page",
-    "get_update_period",
+    "get_db_update_period",
     "get_last_updated",
     "set_last_updated",
+    "calculate_period",
 ]
-
+import json
 import os
 import time
 import logging
@@ -16,6 +17,7 @@ import importlib.resources
 from PySide6 import QtSql
 from cocktail.core.database import data_classes
 
+CURRENT_SCHEMA_VERSION = 1
 
 logger = logging.getLogger(__name__)
 
@@ -27,6 +29,7 @@ def insert_or_replace(db, table_name, rows: typing.Iterable[typing.NamedTuple]):
 
     start = time.time()
     column_names = [name for name in rows[0]._fields]
+
     column_names = ", ".join(column_names)
     placeholder = ", ".join(["?"] * len(rows[0]._fields))
 
@@ -44,6 +47,9 @@ def insert_or_replace(db, table_name, rows: typing.Iterable[typing.NamedTuple]):
         query.prepare(statement)
 
         for index, value in enumerate(row):
+            if isinstance(value, (list, dict)):
+                value = json.dumps(value)
+
             query.bindValue(index, value)
 
         if not query.exec():
@@ -92,6 +98,9 @@ def set_last_updated(db, dt: datetime.datetime = None):
 
 
 def create_tables(db):
+    """
+    populates the database with the schema defined in schema.sql
+    """
     logger.info("creating new database")
 
     schema = importlib.resources.read_text("cocktail.core.database", "schema.sql")
@@ -106,15 +115,22 @@ def create_tables(db):
             logger.error(query.lastError().text())
             return False
 
+    query = QtSql.QSqlQuery(db)
+    query.prepare("PRAGMA user_version = ?")
+    query.bindValue(0, CURRENT_SCHEMA_VERSION)
+    query.exec()
+
     epoch = datetime.datetime.fromtimestamp(0)
     set_last_updated(db, epoch)
 
 
-def get_update_period(db):
-    now = datetime.datetime.now()
-
+def get_db_update_period(db):
     last_updated = get_last_updated(db)
+    return calculate_period(last_updated)
 
+
+def calculate_period(last_updated):
+    now = datetime.datetime.now()
     days = (now - last_updated).days
 
     if days <= 2:
@@ -150,8 +166,17 @@ def get_connection(filepath=None):
     return db
 
 
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.DEBUG)
-    db = get_connection("./cocktail.sqlite3")
+def get_schema_version(db):
+    """
+    Returns the schema version of the database.
+    """
+    query = QtSql.QSqlQuery(db)
+    query.prepare("PRAGMA user_version")
 
-    update_db(db, data_classes.Period.AllTime)
+    if not query.exec():
+        raise RuntimeError(f"Failed to execute statement: {query.lastError().text()}")
+
+    if not query.next():
+        raise RuntimeError("Failed to get schema version")
+    version = query.value(0)
+    return version
