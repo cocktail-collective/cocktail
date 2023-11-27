@@ -61,5 +61,3 @@ CREATE TABLE IF NOT EXISTS metadata (
     value TEXT NOT NULL,
     UNIQUE (key)
 );
-
-PRAGMA user_version = 1;

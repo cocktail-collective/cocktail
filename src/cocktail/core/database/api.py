@@ -98,6 +98,9 @@ def set_last_updated(db, dt: datetime.datetime = None):
 
 
 def create_tables(db):
+    """
+    populates the database with the schema defined in schema.sql
+    """
     logger.info("creating new database")
 
     schema = importlib.resources.read_text("cocktail.core.database", "schema.sql")
@@ -164,17 +167,13 @@ def get_connection(filepath=None):
 
 
 def get_schema_version(db):
+    """
+    Returns the schema version of the database.
+    """
     query = QtSql.QSqlQuery(db)
     query.prepare("PRAGMA user_version")
 
     if not query.exec():
         raise RuntimeError(f"Failed to execute statement: {query.lastError().text()}")
 
-    return int(query.value(0))
-
-
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.DEBUG)
-    db = get_connection("./cocktail.sqlite3")
-
-    update_db(db, data_classes.Period.AllTime)
+    return int(query.value(0) or 0)
