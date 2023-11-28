@@ -2,7 +2,7 @@ __all__ = ["ModelInfoView", "CreatorInfoView", "ModelInfoHeader"]
 from PySide6 import QtCore, QtWidgets, QtGui
 from cocktail.ui.image_gallery import ImageWidget, ImageGalleryView
 from cocktail.core.database import data_classes
-from cocktail import util
+from cocktail.core import util
 import qtawesome
 
 

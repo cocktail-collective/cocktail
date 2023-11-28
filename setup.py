@@ -37,7 +37,7 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "cocktail = cocktail.__main__:main",
+            "cocktail = cocktail.ui.__main__:main",
         ],
     },
     extras_require={
