@@ -62,11 +62,7 @@ def main():
         if not args.no_update:
             MAIN_CONTROLLER.database_controller.updateModelData()
 
-    startup_controller = StartupController()
-    startup_controller.complete.connect(start)
-    startup_controller.canceled.connect(app.quit)
-    startup_controller.start()
-
+    start()
     app.exec()
 
 
