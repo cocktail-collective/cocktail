@@ -13,7 +13,7 @@ Download the latest [release](https://github.com/cocktail-collective/cocktail/re
 
 or install in a virual environment.
 
-`Note: Git LFS is required to checkout this repository`
+`Note: Git LFS is required to checkout this repository, without LFS Images will be missing.`
 
 ``` bash
 git clone https://github.com/cocktail-collective/cocktail.git
@@ -21,6 +21,7 @@ cd cocktail
 python3 -m venv venv
 source venv/bin/activate
 pip install .
+python ci/build.py
 cocktail
 ```
 
