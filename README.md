@@ -13,7 +13,7 @@ Download the latest [release](https://github.com/cocktail-collective/cocktail/re
 
 or install in a virual environment.
 
-Note: Git LFS is required to checkout this repository
+`Note: Git LFS is required to checkout this repository`
 
 ``` bash
 git clone https://github.com/cocktail-collective/cocktail.git
