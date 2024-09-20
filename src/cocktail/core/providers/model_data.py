@@ -15,7 +15,7 @@ API_URL = "https://civitai.com/api/v1"
 
 class ModelDataProvider(QtCore.QObject):
     """
-    A proxy model which displays images from a column containing URLs.
+    A provider for Civitai model data.
     """
 
     pageReady = QtCore.Signal()
@@ -28,6 +28,7 @@ class ModelDataProvider(QtCore.QObject):
         self.network_manager = QtNetwork.QNetworkAccessManager()
         self.queue = queue_api.Queue()
         self._busy = False
+        self._total_pages = None
         self._retries = {}
 
     def requestModelData(self, period):
@@ -35,11 +36,11 @@ class ModelDataProvider(QtCore.QObject):
             return
 
         self._busy = True
-
-        logger.debug(f"requesting model data for period: {period.value}")
+        self._total_pages = None
+        logger.info(f"requesting model data for period: {period.value}")
         self._retries.clear()
 
-        url = f"{API_URL}/models?period={period.value}&limit=20"
+        url = f"{API_URL}/models?period={period.value}&limit=100"
         self._requestPage(url)
         self.beginRequest.emit()
 
@@ -77,12 +78,19 @@ class ModelDataProvider(QtCore.QObject):
         self.pageReady.emit()
 
         metadata = data["metadata"]
-        current_page = metadata.get("currentPage")
-        total_pages = metadata.get("totalPages")
 
-        logger.debug(f"model request: {current_page}/{total_pages}")
+        try:
+            next_cursor = metadata["nextCursor"]
+            elements = next_cursor.split("|")
+            if self._total_pages is None:
+                self._total_pages = int(elements[0])
 
-        self.progress.emit(current_page, total_pages)
+            pages_remaining = int(elements[0])
+            progress = self._total_pages - pages_remaining
+            self.progress.emit(progress, self._total_pages)
+            logger.info(f"model page: {progress}/{self._total_pages}")
+        except Exception:
+            logger.exception(f"failed to detect progress")
 
         next_page = metadata.get("nextPage")
 

@@ -6,12 +6,14 @@ import cocktail.core.database
 from cocktail.core.database import data_classes, api as db_api
 from cocktail.core.providers.model_data import ModelDataProvider
 from cocktail.ui.database.view import DatabaseView
-from cocktail.ui.logging import LogController
+from cocktail.ui.logger import LogController
 
 
 class DatabaseController(QtCore.QObject):
     updateComplete = QtCore.Signal()
     updateProgress = QtCore.Signal(int)
+    updateMessage = QtCore.Signal(str)
+    dataUpdated = QtCore.Signal()
 
     def __init__(self, connection, view=None, parent=None):
         super().__init__(parent)
@@ -26,6 +28,7 @@ class DatabaseController(QtCore.QObject):
 
         self.logger = logging.getLogger(cocktail.core.database.__name__)
         self.log_controller = LogController(self.logger, self.view.log_view)
+        self.log_controller.logMessageReceived.connect(self.updateMessage)
 
     def updateModelData(self, period: data_classes.Period = None):
         if period is None:
@@ -38,18 +41,22 @@ class DatabaseController(QtCore.QObject):
     def onPageReady(self):
         page = self.model_data_provider.queue.get()
         db_api.insert_page(self.connection, page)
+        self.dataUpdated.emit()
 
     def onUpdateBegin(self):
+        self.updateMessage.emit("Querying API")
         self.view.setProgressText("Querying API")
         self.view.setProgress(0, 0)
 
     def onUpdateProgress(self, value, total):
         self.view.setProgressText(f"Making Updates")
+        self.updateMessage.emit("Making Updates")
         self.view.setProgress(value, total)
 
     def onUpdateEnd(self):
         self.view.setProgress(0, 100)
         self.view.setProgressText("Update Complete")
+        self.updateMessage.emit("Update Complete")
         db_api.set_last_updated(self.connection)
         self.updateComplete.emit()
 
@@ -64,6 +71,7 @@ if __name__ == "__main__":
     db = db_api.get_connection()
 
     controller = DatabaseController(db)
+    controller.updateModelData(period=data_classes.Period.Day)
     controller.view.show()
 
     app.exec()

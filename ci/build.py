@@ -2,7 +2,12 @@
 import sys
 import subprocess
 import shutil
+import argparse
 
+parser = argparse.ArgumentParser()
+parser.add_argument("--no-exe")
+
+args = parser.parse_args()
 
 pyside6_rcc = shutil.which("pyside6-rcc")
 if not pyside6_rcc:
@@ -11,7 +16,7 @@ if not pyside6_rcc:
 
 
 pyinstaller = shutil.which("pyinstaller")
-if not pyinstaller:
+if not pyinstaller or args.no_exe:
     print("pyinstaller not found")
     sys.exit(1)
 
@@ -26,15 +31,16 @@ subprocess.check_call(
     ]
 )
 
-print("Building executable")
-subprocess.check_call(
-    [
-        pyinstaller,
-        "--clean",
-        "--onefile",
-        "--noconfirm",
-        "--name",
-        "cocktail",
-        "src/cocktail/__main__.py",
-    ]
-)
+if not args.no_exe:
+    print("Building executable")
+    subprocess.check_call(
+        [
+            pyinstaller,
+            "--clean",
+            "--onefile",
+            "--noconfirm",
+            "--name",
+            "cocktail",
+            "src/cocktail/ui/__main__.py",
+        ]
+    )

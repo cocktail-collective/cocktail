@@ -1,19 +1,19 @@
 pragma journal_mode = WAL;
 pragma synchronous = normal;
+pragma user_version = 2;
 
 CREATE TABLE IF NOT EXISTS model (
     id INTEGER PRIMARY KEY,
     name TEXT NOT NULL,
     type TEXT NOT NULL,
     category TEXT NOT NULL,
-    nsfw BOOLEAN NOT NULL,
+    nsfw INTEGER NOT NULL,
     creator_name TEXT NOT NULL,
     creator_image TEXT NOT NULL,
     image TEXT NOT NULL,
     image_blur_hash TEXT NOT NULL,
     description TEXT NOT NULL,
     updated_at INTEGER NOT NULL
-
 );
 
 CREATE TABLE IF NOT EXISTS model_version (
@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS model_version (
     name TEXT NOT NULL,
     description TEXT NOT NULL,
     trained_words TEXT NOT NULL,
+    base_model TEXT NOT NULL,
     FOREIGN KEY (model_id) REFERENCES model (id)
 );
 
