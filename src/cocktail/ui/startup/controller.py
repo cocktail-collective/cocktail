@@ -125,7 +125,8 @@ class StartupController(QtCore.QObject):
         """
         begin the startup process.
         """
-        logger.info("checking for database...")
+        logger.info(f"checking for database: {self.database_path}")
+
         if os.path.exists(self.database_path):
             logger.info("checking database schema...")
             connection = db_api.get_connection(self.database_path)

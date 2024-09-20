@@ -57,7 +57,7 @@ class CreatorInfoView(QtWidgets.QWidget):
         self.creator_image.borderPen = QtGui.QPen(QtGui.QColor(255, 255, 255, 64), 2)
         self.creator_name = QtWidgets.QLabel("Name")
 
-        layout = QtWidgets.QVBoxLayout(self)
+        layout = QtWidgets.QHBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self.creator_image)
         layout.addWidget(self.creator_name)
@@ -91,7 +91,7 @@ class ModelInfoHeader(QtWidgets.QWidget):
         layout = QtWidgets.QHBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self.model_name_label, 1, QtCore.Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(self.creator_info, 0, QtCore.Qt.AlignmentFlag.AlignRight)
+        # layout.addWidget(self.creator_info, 0, QtCore.Qt.AlignmentFlag.AlignRight)
 
 
 class ImageInfoView(CollapsibleGroup):

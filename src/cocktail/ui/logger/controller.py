@@ -3,11 +3,12 @@ __all__ = ["LogController"]
 import logging
 import qtawesome
 from PySide6 import QtCore, QtWidgets, QtGui
-from cocktail.ui.logging.handler import LogHandler
-from cocktail.ui.logging.view import LogView
+from cocktail.ui.logger.handler import LogHandler
+from cocktail.ui.logger.view import LogView
 
 
 class LogController(QtCore.QObject):
+    logMessageReceived = QtCore.Signal(str)
     def __init__(self, logger, view=None, parent=None):
         super().__init__(parent)
         self.model = QtGui.QStandardItemModel()
@@ -28,5 +29,5 @@ class LogController(QtCore.QObject):
     def onRecordReady(self, record):
         item = QtGui.QStandardItem(record.getMessage())
         item.setIcon(self.icons[record.levelno])
-
         self.model.appendRow(item)
+        self.logMessageReceived.emit(record.getMessage())

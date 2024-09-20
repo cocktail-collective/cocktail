@@ -8,10 +8,10 @@ import logging
 import datetime
 import json
 import enum
+import time
 import typing
 from PySide6 import QtSql
 from cocktail.core.database import util
-
 
 logger = logging.getLogger(__name__)
 
@@ -24,8 +24,9 @@ class Period(enum.Enum):
     AllTime = "AllTime"
 
 
-def items_from_model_version(data: dict):
-    version = ModelVersion.from_json(data)
+def items_from_model_version(model_id: int, data: dict):
+    version = ModelVersion.from_json(model_id, data)
+
     files = [
         ModelFile.from_json(version.model_id, version.id, file)
         for file in data["files"]
@@ -46,7 +47,7 @@ def items_from_model_json(data: dict):
     images = []
 
     for version_data in data["modelVersions"]:
-        version, version_files, version_images = items_from_model_version(version_data)
+        version, version_files, version_images = items_from_model_version(model.id, version_data)
         versions.append(version)
         files.extend(version_files)
         images.extend(version_images)
@@ -102,14 +103,21 @@ class Model(typing.NamedTuple):
         else:
             timestamp = datetime.datetime.now().timestamp()
 
+        if "creator" in data:
+            creator_name = data["creator"]["username"]
+            creator_image = data["creator"]["image"] or ""
+        else:
+            creator_name = ""
+            creator_image = ""
+
         return cls(
             id=data["id"],
             name=data["name"],
             type=data["type"],
             category=util.select_category(data["tags"]),
             nsfw=util.detect_nsfw(data, image_data),
-            creator_name=data["creator"]["username"],
-            creator_image=data["creator"]["image"] or "",
+            creator_name=creator_name,
+            creator_image=creator_image,
             image=image_data.get("url", ""),
             image_blur_hash=image_data.get("hash", "") or "",
             description=data["description"] or "",
@@ -198,7 +206,7 @@ class ModelImage(typing.NamedTuple):
 
     @classmethod
     def from_json(cls, model_id, model_version_id, data: dict):
-        metadata = data["meta"] or {}
+        metadata = data.get("meta", {}) or {}
 
         generation_data = {
             "prompt": metadata.get("prompt", ""),
@@ -240,15 +248,17 @@ class ModelVersion(typing.NamedTuple):
     name: str
     description: str
     trained_words: typing.List[str]
+    base_model: str
 
     @classmethod
-    def from_json(cls, data: dict):
+    def from_json(cls, model_id: int, data: dict):
         return cls(
             id=data["id"],
-            model_id=data["modelId"],
+            model_id=model_id,
             name=data["name"],
             description=data["description"] or "",
             trained_words=data["trainedWords"],
+            base_model=data.get("baseModel", "Other"),
         )
 
     @classmethod
@@ -259,6 +269,7 @@ class ModelVersion(typing.NamedTuple):
             name=record.value("name"),
             description=record.value("description"),
             trained_words=json.loads(record.value("trained_words")),
+            base_model=record.value("base_model"),
         )
 
 
@@ -276,10 +287,28 @@ def parse_timestamp(date_str: str):
 
 def iter_model_timestamps(model_data):
     for version in model_data["modelVersions"]:
-        updated_at_str = (
-            version.get("updatedAt", version["createdAt"]) or version["createdAt"]
-        )
-        yield parse_timestamp(updated_at_str)
+        updated_at = version.get("updatedAt")
+        if updated_at:
+            yield parse_timestamp(updated_at)
+            continue
+
+        published_at = version.get("publishedAt")
+        if published_at:
+            yield parse_timestamp(published_at)
+            continue
+
+        created_at = version.get("createdAt")
+        if created_at:
+            yield parse_timestamp(created_at)
+            continue
+
+        file_timestamps = [f.get("scannedAt") for f in version.get("files", [])]
+        file_timestamps = [parse_timestamp(f) for f in file_timestamps if f]
+        if file_timestamps:
+            yield max(file_timestamps)
+            continue
+
+        yield int(datetime.datetime.now().timestamp())
 
 
 if __name__ == "__main__":

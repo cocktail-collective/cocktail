@@ -6,6 +6,7 @@ __all__ = [
     "set_last_updated",
     "calculate_period",
 ]
+
 import json
 import os
 import time
@@ -17,7 +18,7 @@ import importlib.resources
 from PySide6 import QtSql
 from cocktail.core.database import data_classes
 
-CURRENT_SCHEMA_VERSION = 1
+CURRENT_SCHEMA_VERSION = 2
 
 logger = logging.getLogger(__name__)
 
@@ -179,4 +180,5 @@ def get_schema_version(db):
     if not query.next():
         raise RuntimeError("Failed to get schema version")
     version = query.value(0)
+    logger.info("user version: {}".format(version))
     return version

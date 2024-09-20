@@ -52,9 +52,13 @@ class CenterWidget(QtWidgets.QWidget):
         browser_layout.addWidget(self.search_view)
         browser_layout.addWidget(self.model_gallery_view)
 
+        tabs_scroll_area = QtWidgets.QScrollArea()
+        tabs_scroll_area.setWidgetResizable(True)
+        tabs_scroll_area.setWidget(self.tabs)
+
         layout = QtWidgets.QHBoxLayout()
         layout.addLayout(browser_layout, 5)
-        layout.addWidget(self.tabs, 2)
+        layout.addWidget(tabs_scroll_area, 2)
 
         main_layout = QtWidgets.QVBoxLayout(self)
         main_layout.addLayout(layout)

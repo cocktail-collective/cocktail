@@ -1,4 +1,5 @@
 __all__ = ["ImageGalleryView", "ImageWidget"]
+
 import typing
 import PySide6.QtCore
 import qtawesome
@@ -128,7 +129,7 @@ class NavigationView(QtWidgets.QWidget):
             self._buttons.append(button)
 
             def callback(b=button, i=index):
-                self.indexChanged.emit(self._buttons.index(b))
+                self.indexChanged.emit(i)
 
             button.clicked.connect(callback)
 

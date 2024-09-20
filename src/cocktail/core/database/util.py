@@ -1,3 +1,4 @@
+import json
 import os
 
 # additional words that indicate nsfw content. Civitai's nsfw tag is not very reliable.
@@ -153,12 +154,23 @@ def select_category(tags):
 
 def is_file_safe(file_data: dict):
     return (
-        file_data["pickleScanResult"] == "Success"
-        and file_data["virusScanResult"] == "Success"
+            file_data["pickleScanResult"] == "Success"
+            and file_data["virusScanResult"] == "Success"
     )
 
 
 def detect_nsfw(model_data: dict, image: dict):
+    if "nsfwLevel" in model_data:
+        return model_data["nsfwLevel"]
+    else:
+        try:
+            if detect_nsfw(model_data, image):
+                return 50
+        except KeyError:
+            return False
+
+
+def detect_nsfw_legacy(model_data: dict, image: dict):
     creator = model_data["creator"]["username"]
     if creator.lower() in NSFW_CREATORS:
         return True

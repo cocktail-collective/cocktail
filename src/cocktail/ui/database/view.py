@@ -1,7 +1,7 @@
 __all__ = ["DatabaseView"]
 
 from PySide6 import QtCore, QtWidgets
-from cocktail.ui.logging import LogView
+from cocktail.ui.logger import LogView
 
 
 class DatabaseView(QtWidgets.QWidget):

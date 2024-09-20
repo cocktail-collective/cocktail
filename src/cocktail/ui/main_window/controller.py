@@ -1,5 +1,5 @@
 __all__ = ["MainWindowController"]
-from PySide6 import QtCore
+from PySide6 import QtCore, QtWidgets
 from cocktail.ui.main_window.view import MainWindow
 from cocktail.ui.model_gallery import ModelGalleryController
 from cocktail.ui.model_info import ModelInfoController
@@ -42,6 +42,7 @@ class MainWindowController(QtCore.QObject):
             self.download_controller.downloadModel
         )
 
+
         self.database_controller = DatabaseController(
             self.connection, self.view.central_widget.database_view
         )
@@ -50,9 +51,18 @@ class MainWindowController(QtCore.QObject):
             self.model_gallery_controller.base_model,
             self.view.central_widget.search_view,
         )
-        self.database_controller.updateComplete.connect(self.search_controller.update)
+        self.database_controller.dataUpdated.connect(self.search_controller.update)
+        self.database_controller.dataUpdated.connect(self.search_controller.onSearchChanged)
+        self.database_controller.updateMessage.connect(self.view.statusBar().showMessage)
 
         self.settings_controller = SettingsController(
             self.connection, self.view.central_widget.settings_view
         )
-        # self.database_controller.updateComplete.connect(self.settings_controller.update)
+
+if __name__ == '__main__':
+    import logging
+    logging.basicConfig(level=logging.INFO)
+    app = QtWidgets.QApplication()
+    controller = MainWindowController()
+    controller.view.show()
+    app.exec()
