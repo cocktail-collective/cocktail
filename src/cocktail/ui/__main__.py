@@ -49,6 +49,8 @@ def main():
     if args.list_resources:
         list_resources()
 
+
+
     def start():
         """
         Creating a database connection will create an empty database if one does not exist.
@@ -62,7 +64,10 @@ def main():
         if not args.no_update:
             MAIN_CONTROLLER.database_controller.updateModelData()
 
-    start()
+    start_up_controller = StartupController()
+    start_up_controller.complete.connect(start)
+    start_up_controller.start()
+
     app.exec()
 
 
