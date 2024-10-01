@@ -51,6 +51,10 @@ class ItemRenderWidget(QtWidgets.QWidget):
         self._image = image
 
     def getImageAspectRatio(self, image):
+        if image.isNull():
+            return 1.0
+        if image.width() == 0 or image.height() == 0:
+            return 1.0
         return image.width() / image.height()
 
     def paintEvent(self, e: QtGui.QPaintEvent) -> None:
