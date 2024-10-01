@@ -28,6 +28,7 @@ setup(
     version="0.4.0",
     description="Cocktail",
     package_dir={"": "src"},
+    package_data={"": ["**/*.sql"]},
     packages=find_namespace_packages(where="src"),
     install_requires=[
         "PySide6",
