@@ -5,7 +5,7 @@ import shutil
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--no-exe")
+parser.add_argument("--skip-pyinstaller", action="store_true", dest="no_exe")
 
 args = parser.parse_args()
 
@@ -16,7 +16,7 @@ if not pyside6_rcc:
 
 
 pyinstaller = shutil.which("pyinstaller")
-if not pyinstaller or args.no_exe:
+if not pyinstaller and not args.no_exe:
     print("pyinstaller not found")
     sys.exit(1)
 
