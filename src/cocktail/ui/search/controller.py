@@ -49,6 +49,9 @@ class SearchController(QtCore.QObject):
         self.sort_order_model.appendRow(QtGui.QStandardItem("Updated"))
         self.sort_order_model.appendRow(QtGui.QStandardItem("Name"))
         self.sort_order_model.appendRow(QtGui.QStandardItem("Id"))
+        self.sort_order_model.appendRow(QtGui.QStandardItem("Highest Rating"))
+        self.sort_order_model.appendRow(QtGui.QStandardItem("Most Downloads"))
+        self.sort_order_model.appendRow(QtGui.QStandardItem("Most ThumbsUps"))
         if value:
             self.view.setSortOrder(value)
 
@@ -167,6 +170,12 @@ class SearchController(QtCore.QObject):
             order_by = "id DESC"
         elif sort_order == "Name":
             order_by = "name ASC"
+        elif sort_order == "Highest Rating":
+            order_by = "rating_score DESC"
+        elif sort_order == "Most Downloads":
+            order_by = "download_cnt DESC"
+        elif sort_order == "Most ThumbsUps":
+            order_by = "thumbs_up_cnt DESC"
         else:
             order_by = "updated_at DESC"
 

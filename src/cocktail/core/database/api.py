@@ -18,7 +18,7 @@ import importlib.resources
 from PySide6 import QtSql
 from cocktail.core.database import data_classes
 
-CURRENT_SCHEMA_VERSION = 2
+CURRENT_SCHEMA_VERSION = 3
 
 logger = logging.getLogger(__name__)
 

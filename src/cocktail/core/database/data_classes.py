@@ -92,6 +92,14 @@ class Model(typing.NamedTuple):
     image_blur_hash: str
     description: str
     updated_at: int
+    download_cnt: int
+    favorite_cnt: int
+    thumbs_up_cnt: int
+    thumbs_down_cnt: int
+    comment_cnt: int
+    rating_cnt: int
+    rating_score: float
+    tipped_amt_cnt: int
 
     @classmethod
     def from_json(cls, data: dict):
@@ -122,6 +130,14 @@ class Model(typing.NamedTuple):
             image_blur_hash=image_data.get("hash", "") or "",
             description=data["description"] or "",
             updated_at=timestamp,
+            download_cnt=data["stats"]["downloadCount"],
+            favorite_cnt=data["stats"]["favoriteCount"],
+            thumbs_up_cnt=data["stats"]["thumbsUpCount"],
+            thumbs_down_cnt=data["stats"]["thumbsDownCount"],
+            comment_cnt=data["stats"]["commentCount"],
+            rating_cnt=data["stats"]["ratingCount"],
+            rating_score=data["stats"]["rating"],
+            tipped_amt_cnt=data["stats"]["tippedAmountCount"]
         )
 
     @classmethod
@@ -138,6 +154,14 @@ class Model(typing.NamedTuple):
             image_blur_hash=record.value("image_blur_hash"),
             description=record.value("description"),
             updated_at=record.value("updated_at"),
+            download_cnt=record.value("download_cnt"),
+            favorite_cnt=record.value("favorite_cnt"),
+            thumbs_up_cnt=record.value("thumbs_up_cnt"),
+            thumbs_down_cnt=record.value("thumbs_down_cnt"),
+            comment_cnt=record.value("comment_cnt"),
+            rating_cnt=record.value("rating_cnt"),
+            rating_score=record.value("rating_score"),
+            tipped_amt_cnt=record.value("tipped_amt_cnt")
         )
 
 
@@ -249,6 +273,11 @@ class ModelVersion(typing.NamedTuple):
     description: str
     trained_words: typing.List[str]
     base_model: str
+    download_cnt: int
+    rating_cnt: int
+    rating_score: float
+    thumbs_up_cnt: int
+    thumbs_down_cnt: int
 
     @classmethod
     def from_json(cls, model_id: int, data: dict):
@@ -259,6 +288,11 @@ class ModelVersion(typing.NamedTuple):
             description=data["description"] or "",
             trained_words=data["trainedWords"],
             base_model=data.get("baseModel", "Other"),
+            download_cnt=data["stats"]["downloadCount"],
+            rating_cnt=data["stats"]["ratingCount"],
+            rating_score=data["stats"]["rating"],
+            thumbs_up_cnt=data["stats"]["thumbsUpCount"],
+            thumbs_down_cnt=data["stats"]["thumbsDownCount"],
         )
 
     @classmethod
@@ -270,6 +304,11 @@ class ModelVersion(typing.NamedTuple):
             description=record.value("description"),
             trained_words=json.loads(record.value("trained_words")),
             base_model=record.value("base_model"),
+            download_cnt=record.value("download_cnt"),
+            rating_cnt=record.value("rating_cnt"),
+            rating_score=record.value("rating_score"),
+            thumbs_up_cnt=record.value("thumbs_up_cnt"),
+            thumbs_down_cnt=record.value("thumbs_down_cnt"),
         )
 
 

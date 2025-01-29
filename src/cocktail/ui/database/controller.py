@@ -71,7 +71,7 @@ if __name__ == "__main__":
     db = db_api.get_connection()
 
     controller = DatabaseController(db)
-    controller.updateModelData(period=data_classes.Period.Day)
+    controller.updateModelData(period=data_classes.Period.AllTime)
     controller.view.show()
 
     app.exec()
